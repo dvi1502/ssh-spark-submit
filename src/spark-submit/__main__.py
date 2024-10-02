@@ -42,8 +42,17 @@ def main():
     # скопировать файлы из локальной папки
     files = conf["spark.files"]
     for file in files:
-        print(ssh.command(f"rm -f {workdir}/{os.path.basename(file)}"))
-        ssh.transfer(f"{prjdir}/{file}", f"{workdir}/{os.path.basename(file)}")
+        filename = os.path.basename(file)
+        curdir = os.path.dirname(file)
+        if "#" in filename :
+            src_filename = filename.split("#")[0]
+            dest_filename = filename.split("#")[1]
+        else:
+            src_filename = filename
+            dest_filename = filename
+
+        print(ssh.command(f"rm -f {workdir}/{dest_filename}"))
+        ssh.transfer(f"{prjdir}/{curdir}/{src_filename}", f"{workdir}/{dest_filename}")
 
     # скопировать jars из локальной папки
     files = conf["spark.jars"]
