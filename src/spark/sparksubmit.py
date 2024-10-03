@@ -12,6 +12,27 @@ class SparkSubmit:
         self.conf = conf
         self.app_file = app_file
 
+
+    def files(self):
+        if self.conf.get("spark.files", ""):
+
+            spark_file=[]
+            for file in self.conf.get("spark.files"):
+                filename = os.path.basename(file)
+                if "#" in filename:
+                    src_filename = filename.split("#")[0]
+                    dest_filename = filename.split("#")[1]
+                else:
+                    src_filename = filename
+                    dest_filename = filename
+
+                spark_file.append(f"{self.workdir}/{os.path.basename(dest_filename)}")
+
+            return  f"""--files { ",".join([f"{f}" for f in spark_file])}"""
+
+        else:
+            return ""
+
     def __str__(self):
         deploy_mode = DeployMode(self.conf)
 
@@ -23,7 +44,7 @@ class SparkSubmit:
         spark_app_args = " ".join([f"{arg}" for arg in self.conf["application.args"]]) if len(
             self.conf["application.args"]) != 0 else ""
 
-        spark_files = f"""{"--files '" + ",".join([f"{self.workdir}/{os.path.basename(f)}" for f in self.conf["spark.files"]]) + "'" if len(self.conf["spark.files"]) != 0 else ""} """
+        spark_files = self.files()
 
         spark_jars = f"""{"--jars '" + ",".join([f"{self.workdir}/{os.path.basename(f)}" for f in self.conf["spark.jars"]]) + "'" if len(self.conf["spark.jars"]) != 0 else ""} """
 
