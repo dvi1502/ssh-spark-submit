@@ -1,11 +1,15 @@
 import glob
 import os
 import sys
-from argsparser import parser
+
+sys.path.append('src/spark')
+sys.path.append('src/utils')
+
+from utils.argsparser import parser
 from pyhocon import ConfigFactory
 
-from src.spark.sparksubmit import SparkSubmit
-from ssh import SSH
+from spark.sparksubmit import SparkSubmit
+from utils.ssh import SSH
 
 
 
@@ -76,7 +80,7 @@ def main():
     for script in scripts:
         print(ssh.command(f"{script}"))
 
-    # spark-submit
+    # utils
     # --------------------------------------------------------------------------------------------------------------
     app_id = ssh.command2(f"{SparkSubmit(conf, app_file)}")
     # --------------------------------------------------------------------------------------------------------------

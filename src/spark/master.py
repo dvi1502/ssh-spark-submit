@@ -161,6 +161,6 @@ class Local(Master):
 
 if __name__ == '__main__':
     conf = ConfigFactory.parse_file(
-        """/tests/configs/spark-submit.conf""")
+        """/tests/configs/utils.conf""")
 
     print(Master(conf))

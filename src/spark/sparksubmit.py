@@ -1,14 +1,8 @@
 import os
 
 from pyhocon import ConfigFactory
-
-from src.spark.deploymode import DeployMode
-from src.spark.master import Master
-
-
-# from deploymode import DeployMode
-# from master import Master
-
+from spark.deploymode import DeployMode
+from spark.master import Master
 
 
 class SparkSubmit:
@@ -19,7 +13,6 @@ class SparkSubmit:
         self.app_file = app_file
 
     def __str__(self):
-
         deploy_mode = DeployMode(self.conf)
 
         master = Master(self.conf)
@@ -63,6 +56,6 @@ class SparkSubmit:
 
 if __name__ == '__main__':
     conf = ConfigFactory.parse_file(
-        """/tests/configs/spark-submit.conf""")
+        """/tests/configs/utils.conf""")
 
     print(SparkSubmit(conf, "app_file"))
