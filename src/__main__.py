@@ -2,12 +2,11 @@ import glob
 import os
 import sys
 
-sys.path.append('src/spark')
-sys.path.append('src/utils')
+# sys.path.append('src/spark')
+# sys.path.append('src/utils')
 
 from utils.argsparser import parser
 from pyhocon import ConfigFactory
-
 from spark.sparksubmit import SparkSubmit
 from utils.ssh import SSH
 
