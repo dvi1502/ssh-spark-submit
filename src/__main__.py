@@ -2,6 +2,8 @@ import glob
 import os
 import sys
 
+from config import Config
+
 # sys.path.append('src/spark')
 # sys.path.append('src/utils')
 
@@ -9,8 +11,6 @@ from utils.argsparser import parser
 from pyhocon import ConfigFactory
 from spark.sparksubmit import SparkSubmit
 from utils.ssh import SSH
-
-
 
 home_dir = os.path.expanduser("~")
 
@@ -26,11 +26,8 @@ def get_app_verson(prjdir: str):
                 return title
 
 
-def main():
+def run(conf: Config):
     # print("Аргументы : ", " ".join(str(e) for e in sys.argv[1:]))
-
-    args = parser.parse_args()
-    conf = ConfigFactory.parse_file(args.conf)
 
     prjdir = conf['projectdir']
     workdir = conf['ssh.workdir']
@@ -47,7 +44,7 @@ def main():
     for file in files:
         filename = os.path.basename(file)
         curdir = os.path.dirname(file)
-        if "#" in filename :
+        if "#" in filename:
             src_filename = filename.split("#")[0]
             dest_filename = filename.split("#")[1]
         else:
@@ -90,6 +87,106 @@ def main():
         print(ssh.command(f"{script.replace('$APPID', f'{app_id}')}"))
 
     ssh.disconnect()
+
+
+def show(conf: Config):
+    from pyhocon import HOCONConverter
+    print("---")
+    print(HOCONConverter().to_hocon(conf))
+    print("---")
+
+
+def new(spark_project_path: str):
+    from datetime import date
+    today = date.today()
+
+    current_path = spark_project_path if spark_project_path else os.path.dirname(os.path.abspath(__file__))
+    hostname = "hdp3-client.dmp.vimpelcom.ru"
+    user = os.getlogin().lower()
+    home_dir_local = os.path.expanduser("~")
+    ssh_key = os.path.join(home_dir_local, ".ssh", "id_dmp")
+    app_name = os.path.basename(os.path.normpath(current_path))
+
+    run_path = os.path.join(current_path, ".run")
+    if not os.path.exists(run_path):
+        os.mkdir(run_path, mode=0o777, dir_fd=None)
+        files = ["app.conf"]
+        files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
+
+    else:
+        files = os.listdir(run_path)
+        jars = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.jar'))])
+        py_files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.py'))])
+        files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
+
+    text = f"""projectdir = "{current_path}"
+
+ssh {{
+  host = "{hostname}"
+  user = "{user}"
+  key = "{ssh_key}"
+  workdir = "/home/{user}/{app_name}"
+  env = [
+    "SPARK_MAJOR_VERSION=3"
+  ]
+  beforeScript = [
+    "echo $SPARK_MAJOR_VERSION"
+  ]
+  afterScript = [
+    "echo $SPARK_MAJOR_VERSION"
+    "echo $APPID"
+    "rm -r -f /home/{user}/{app_name}/logs.txt"
+    "yarn logs -applicationId $APPID -out /home/{user}/{app_name}/logs.txt"
+  ]
+}}
+
+application {{
+  class = "ru.beeline.dmp.<package>.<name>.Main"
+  name = "SPARK:APP:NAME, simple {app_name}"
+  args = [
+    "--event-date"
+    "{today}T00:00:00+0300"
+  ]
+}}
+
+spark {{
+  master = "yarn"
+  deployMode = "cluster"
+  driverCores = 2
+  driverMemory = "512m"
+  executorMemory = "512m"
+  numExecutors = 2
+  executorCores = 2
+  verbose = false
+  configs = [
+    "spark.yarn.report.interval=3000"
+    "spark.executor.extraJavaOptions=\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\""
+    "spark.driver.extraJavaOptions=\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\""
+  ]
+  files = [{files}]
+  jars = [{jars}]
+  packages = []
+  repositories = []
+  py-files = [{py_files}]
+}}
+"""
+
+    with open(os.path.join(current_path, ".run", "spark-submit.conf"), 'w') as the_file:
+        for l in text:
+            the_file.writelines(l)
+
+    return text
+
+
+def main():
+    args = parser.parse_args()
+    conf = ConfigFactory.parse_file(args.conf)
+    if args.app == "run":
+        run(conf)
+    elif args.app == "new":
+        print(new(args.project))
+    elif args.app == "show":
+        show(conf)
 
 
 if __name__ == '__main__':
