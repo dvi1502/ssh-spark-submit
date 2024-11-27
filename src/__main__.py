@@ -17,10 +17,10 @@ home_dir = os.path.expanduser("~")
 
 def get_app_verson(prjdir: str):
     import re
-    with open(f"{prjdir}/build.sbt") as f:
+    with open(f"{prjdir}/build.sbt", mode="r", encoding="utf-8") as f:
         lines = f.readlines()
         for line in lines:
-            title_search = re.search(r'ThisBuild \/ version := "([0-9\.]+)"', line, re.IGNORECASE)
+            title_search = re.search(r'ThisBuild \/ version := "([0-9\.]+)(.*)"', line, re.IGNORECASE)
             if title_search:
                 title = title_search.group(1)
                 return title
@@ -64,7 +64,7 @@ def main():
         ssh.transfer(f"{prjdir}/{file}", f"{workdir}/{os.path.basename(file)}")
 
     # скопировать сборку
-    files = glob.glob(f'{prjdir}/target/**/*{app_version}.jar', recursive=True)
+    files = glob.glob(f'{prjdir}/target/**/*{app_version}*.jar', recursive=True)
     app_file = files[0]
     print(ssh.command(f"rm -f {workdir}/{os.path.basename(app_file)}"))
     ssh.transfer(f"{app_file}", f"{workdir}/{os.path.basename(app_file)}")
