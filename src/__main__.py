@@ -64,7 +64,7 @@ def main():
         ssh.transfer(f"{prjdir}/{file}", f"{workdir}/{os.path.basename(file)}")
 
     # скопировать сборку
-    files = glob.glob(f'{prjdir}/target/**/*{app_version}*.jar', recursive=True)
+    files = glob.glob(f'{prjdir}/target/**/*{app_version}.jar', recursive=True)
     app_file = files[0]
     print(ssh.command(f"rm -f {workdir}/{os.path.basename(app_file)}"))
     ssh.transfer(f"{app_file}", f"{workdir}/{os.path.basename(app_file)}")
