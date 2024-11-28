@@ -19,10 +19,21 @@ python -m build
 pip install .\ssh_spark_submit-0.1.0-py3-none-any.whl
 ```
 
-3. Запустить пакет 
+## Варианты испрользования
 
+
+1) Создать конфигурационный файл для проекта  
 ```shell
-python .\dist\spark_submit-0.0.1-py3-none-any.whl --conf tests/configs/spark-submit.conf
+python .\dist\spark_submit-0.0.1-py3-none-any.whl --new --project C:\Users\DmVIvakin\sources\domain-technica-sms\smsc-consumer
 ```
 
-    
+2) Проверить конфигурационный файл   
+```shell
+python .\dist\spark_submit-0.0.1-py3-none-any.whl --show --conf C:\Users\DmVIvakin\sources\domain-technica-sms\smsc-consumer\.run\spark-submit.conf
+```
+
+3) Запустить пакет 
+
+```shell
+python .\dist\spark_submit-0.0.1-py3-none-any.whl --run --conf tests/configs/spark-submit.conf
+```

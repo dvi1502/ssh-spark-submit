@@ -10,6 +10,7 @@ from config import Config
 from utils.argsparser import parser
 from pyhocon import ConfigFactory
 from spark.sparksubmit import SparkSubmit
+from utils.colors import colors
 from utils.ssh import SSH
 
 home_dir = os.path.expanduser("~")
@@ -91,9 +92,7 @@ def run(conf: Config):
 
 def show(conf: Config):
     from pyhocon import HOCONConverter
-    print("---")
-    print(HOCONConverter().to_hocon(conf))
-    print("---")
+    return HOCONConverter().to_hocon(conf)
 
 
 def new(spark_project_path: str):
@@ -180,14 +179,26 @@ spark {{
 
 def main():
     args = parser.parse_args()
-    if args.app == "run":
+    if args.run:
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
+        print(f"{colors.fg.green}run{colors.endc}\tconf: {args.conf}")
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
         conf = ConfigFactory.parse_file(args.conf)
         run(conf)
-    elif args.app == "new":
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
+    elif args.new:
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
+        print(f"{colors.fg.green}new{colors.endc}\tproject: {args.project}")
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
         print(new(args.project))
-    elif args.app == "show":
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
+    elif args.show:
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
+        print(f"{colors.fg.green}show{colors.endc}\tconf: {args.conf}")
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
         conf = ConfigFactory.parse_file(args.conf)
-        show(conf)
+        print(show(conf))
+        print(f"{colors.fg.green}---------------------------------------{colors.endc}")
 
 
 if __name__ == '__main__':
