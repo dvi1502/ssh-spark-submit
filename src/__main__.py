@@ -181,20 +181,20 @@ def main():
     args = parser.parse_args()
     if args.run:
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
-        print(f"{colors.fg.green}run{colors.endc}\tconf: {args.conf}")
+        print(f"{colors.fg.lightgreen}run{colors.fg.yellow}\tconf: {args.conf}{colors.endc}")
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
         conf = ConfigFactory.parse_file(args.conf)
         run(conf)
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
     elif args.new:
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
-        print(f"{colors.fg.green}new{colors.endc}\tproject: {args.project}")
+        print(f"{colors.fg.lightgreen}new{colors.fg.yellow}\tproject: {args.project}{colors.endc}")
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
         print(new(args.project))
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
     elif args.show:
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
-        print(f"{colors.fg.green}show{colors.endc}\tconf: {args.conf}")
+        print(f"{colors.fg.lightgreen}show{colors.fg.yellow}\tconf: {args.conf}{colors.endc}")
         print(f"{colors.fg.green}---------------------------------------{colors.endc}")
         conf = ConfigFactory.parse_file(args.conf)
         print(show(conf))
