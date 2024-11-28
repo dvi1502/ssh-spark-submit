@@ -6,8 +6,8 @@ parser = argparse.ArgumentParser(
     epilog="And that's how you'd foo a bar."
 )
 
-parser.add_argument('--conf', '-c', help='File name ini-file with run options.', type=str, required=True)
-parser.add_argument('--app', '-a', help='run, new, show', type=str, required=True, default="run")
+parser.add_argument('--conf', '-c', help='File name ini-file with run options.', type=str, required=False, default="./.run/spark-submit.conf")
+parser.add_argument('--app', '-a', help='run, new, show', type=str, required=False, default="run")
 parser.add_argument('--project', '-p', help='Spark-project path', type=str, required=False)
 
 if __name__ == "__main__":

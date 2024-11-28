@@ -119,7 +119,7 @@ def new(spark_project_path: str):
         py_files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.py'))])
         files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
 
-    text = f"""projectdir = "{current_path}"
+    text = f"""projectdir = \"\"\"{current_path}\"\"\"
 
 ssh {{
   host = "{hostname}"
@@ -160,8 +160,8 @@ spark {{
   verbose = false
   configs = [
     "spark.yarn.report.interval=3000"
-    "spark.executor.extraJavaOptions=\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\""
-    "spark.driver.extraJavaOptions=\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\""
+    "spark.executor.extraJavaOptions=\\\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\\\""
+    "spark.driver.extraJavaOptions=\\\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\\\""
   ]
   files = [{files}]
   jars = [{jars}]
@@ -180,12 +180,13 @@ spark {{
 
 def main():
     args = parser.parse_args()
-    conf = ConfigFactory.parse_file(args.conf)
     if args.app == "run":
+        conf = ConfigFactory.parse_file(args.conf)
         run(conf)
     elif args.app == "new":
         print(new(args.project))
     elif args.app == "show":
+        conf = ConfigFactory.parse_file(args.conf)
         show(conf)
 
 
