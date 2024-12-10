@@ -27,7 +27,7 @@ class SparkSubmit:
 
                 spark_file.append(f"{self.workdir}/{os.path.basename(dest_filename)}")
 
-            return f"""--files {",".join([f"{f}" for f in spark_file])}"""
+            return f"""--files '{",".join([f"{f}" for f in spark_file])}'"""
 
         else:
             return ""
@@ -54,6 +54,7 @@ class SparkSubmit:
         spark_py_files = f"""{"--py-files '" + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.py-files"]]) + "'" if len(self.conf["spark.py-files"]) != 0 else ""} """
 
         spark_submit_command = " ".join([
+            f"cd {self.workdir}; ",
             f"spark-submit",
             f"--name '{self.conf['application.name']}'",
             f"--class {self.conf['application.class']} ",
@@ -71,7 +72,7 @@ class SparkSubmit:
             f"{spark_app_args}"
         ])
 
-        return spark_submit_command
+        return " ".join(spark_submit_command.split())
 
 
 if __name__ == '__main__':

@@ -39,9 +39,9 @@ def move_files(files, prjdir, workdir, ssh):
         filename = os.path.basename(match.group(2))
         curdir = os.path.dirname(match.group(2))
 
-        print(f"driver = {driver}")
-        print(f"filename = {filename}")
-        print(f"curdir = {curdir}")
+        # print(f"driver = {driver}")
+        # print(f"filename = {filename}")
+        # print(f"curdir = {curdir}")
 
         if "#" in filename:
             src_filename = filename.split("#")[0]
@@ -66,9 +66,9 @@ def move_jars(files, prjdir, workdir, ssh):
         filename = os.path.basename(match.group(2))
         curdir = os.path.dirname(match.group(2))
 
-        print(f"driver = {driver}")
-        print(f"filename = {filename}")
-        print(f"curdir = {curdir}")
+        # print(f"driver = {driver}")
+        # print(f"filename = {filename}")
+        # print(f"curdir = {curdir}")
 
         if driver == "upload://":
             print(ssh.command(f"rm -f {workdir}/{filename}"))
