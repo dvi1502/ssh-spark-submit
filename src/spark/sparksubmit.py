@@ -1,4 +1,5 @@
 import os
+import re
 
 from pyhocon import ConfigFactory
 from spark.deploymode import DeployMode
@@ -12,13 +13,11 @@ class SparkSubmit:
         self.conf = conf
         self.app_file = app_file
 
-
     def files(self):
         if self.conf.get("spark.files", ""):
-
-            spark_file=[]
+            spark_file = []
             for file in self.conf.get("spark.files"):
-                filename = os.path.basename(file)
+                filename = os.path.basename(file).replace("upload://", "").replace("server://", "")
                 if "#" in filename:
                     src_filename = filename.split("#")[0]
                     dest_filename = filename.split("#")[1]
@@ -28,7 +27,7 @@ class SparkSubmit:
 
                 spark_file.append(f"{self.workdir}/{os.path.basename(dest_filename)}")
 
-            return  f"""--files { ",".join([f"{f}" for f in spark_file])}"""
+            return f"""--files {",".join([f"{f}" for f in spark_file])}"""
 
         else:
             return ""

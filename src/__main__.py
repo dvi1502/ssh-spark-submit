@@ -1,5 +1,6 @@
 import glob
 import os
+import re
 import sys
 
 from config import Config
@@ -26,6 +27,58 @@ def get_app_verson(prjdir: str):
                 title = title_search.group(1)
                 return title
 
+def move_files(files, prjdir, workdir, ssh):
+
+    # скопировать файлы из локальной папки
+    # upload: //
+    # server: //
+
+    for file in files:
+        match = re.search(r"""^(.*):\/\/(.*)""", file)
+        driver = match.group(1)+"://"
+        filename = os.path.basename(match.group(2))
+        curdir = os.path.dirname(match.group(2))
+
+        print(f"driver = {driver}")
+        print(f"filename = {filename}")
+        print(f"curdir = {curdir}")
+
+        if "#" in filename:
+            src_filename = filename.split("#")[0]
+            dest_filename = filename.split("#")[1]
+        else:
+            src_filename = filename
+            dest_filename = filename
+
+        if driver == "upload://":
+            print(ssh.command(f"rm -f {workdir}/{dest_filename}"))
+            ssh.transfer(f"{prjdir}/{curdir}/{src_filename}", f"{workdir}/{dest_filename}")
+
+        elif driver == "server://":
+            print(ssh.command(f"rm -f {workdir}/{dest_filename}"))
+            print(ssh.command(f"cp {curdir}/{src_filename} {workdir}/{dest_filename}"))
+
+
+def move_jars(files, prjdir, workdir, ssh):
+    for file in files:
+        match = re.search(r"""^(.*):\/\/(.*)""", file)
+        driver = match.group(1) + "://"
+        filename = os.path.basename(match.group(2))
+        curdir = os.path.dirname(match.group(2))
+
+        print(f"driver = {driver}")
+        print(f"filename = {filename}")
+        print(f"curdir = {curdir}")
+
+        if driver == "upload://":
+            print(ssh.command(f"rm -f {workdir}/{filename}"))
+            ssh.transfer(f"{prjdir}/{curdir}/{filename}", f"{workdir}/{filename}")
+
+        elif driver == "server://":
+            print(ssh.command(f"rm -f {workdir}/{filename}"))
+            print(ssh.command(f"cp {curdir}/{filename} {workdir}/{filename}"))
+
+
 
 def run(conf: Config):
     # print("Аргументы : ", " ".join(str(e) for e in sys.argv[1:]))
@@ -41,25 +94,10 @@ def run(conf: Config):
     print(ssh.command(f"mkdir -p {workdir}"))
 
     # скопировать файлы из локальной папки
-    files = conf["spark.files"]
-    for file in files:
-        filename = os.path.basename(file)
-        curdir = os.path.dirname(file)
-        if "#" in filename:
-            src_filename = filename.split("#")[0]
-            dest_filename = filename.split("#")[1]
-        else:
-            src_filename = filename
-            dest_filename = filename
-
-        print(ssh.command(f"rm -f {workdir}/{dest_filename}"))
-        ssh.transfer(f"{prjdir}/{curdir}/{src_filename}", f"{workdir}/{dest_filename}")
+    move_files(conf["spark.files"], prjdir, workdir, ssh)
 
     # скопировать jars из локальной папки
-    files = conf["spark.jars"]
-    for file in files:
-        print(ssh.command(f"rm -f {workdir}/{os.path.basename(file)}"))
-        ssh.transfer(f"{prjdir}/{file}", f"{workdir}/{os.path.basename(file)}")
+    move_jars(conf["spark.jars"], prjdir, workdir, ssh)
 
     # скопировать сборку
     files = glob.glob(f'{prjdir}/target/**/*{app_version}.jar', recursive=True)
