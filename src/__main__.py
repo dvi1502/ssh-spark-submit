@@ -152,9 +152,9 @@ def new(spark_project_path: str):
 
     else:
         files = os.listdir(run_path)
-        jars = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.jar'))])
-        py_files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.py'))])
-        files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
+        jars = ',\n'.join(["\"\"\"upload://"+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.jar'))])
+        py_files = ',\n'.join(["\"\"\"upload://"+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.py'))])
+        files = ',\n'.join(["\"\"\"upload://"+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
 
     text = f"""projectdir = \"\"\"{current_path}\"\"\"
 
