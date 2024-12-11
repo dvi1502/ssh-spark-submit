@@ -195,6 +195,9 @@ spark {{
   numExecutors = 2
   executorCores = 2
   verbose = false
+  principal = "dmvivakin@BAA.RUCOM.RU"
+  keytab = "dmvivakin.keytab"
+  
   configs = [
     "spark.yarn.report.interval=3000"
     "spark.executor.extraJavaOptions=\\\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\\\""

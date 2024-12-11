@@ -25,9 +25,9 @@ class SparkSubmit:
                     src_filename = filename
                     dest_filename = filename
 
-                spark_file.append(f"{self.workdir}/{os.path.basename(dest_filename)}")
+                spark_file.append(f"file://{self.workdir}/{os.path.basename(dest_filename)}")
 
-            return f"""--files '{",".join([f"{f}" for f in spark_file])}'"""
+            return f"""--files {",".join([f"{f}" for f in spark_file])} """
 
         else:
             return ""
@@ -37,6 +37,17 @@ class SparkSubmit:
 
         master = Master(self.conf)
 
+        if self.conf.get("spark.principal", ""):
+            principal = f"--principal {self.conf['spark.principal']}"
+        else:
+            principal = ""
+
+        if self.conf.get("spark.keytab", ""):
+            keytab = f"--keytab {self.conf['spark.keytab']}"
+        else:
+            keytab = ""
+
+
         spark_configs = " ".join([f"--conf {c}" for c in self.conf["spark.configs"]]) if len(
             self.conf["spark.configs"]) != 0 else ""
 
@@ -45,23 +56,25 @@ class SparkSubmit:
 
         spark_files = self.files()
 
-        spark_jars = f"""{"--jars '" + ",".join([f"{self.workdir}/{os.path.basename(f)}" for f in self.conf["spark.jars"]]) + "'" if len(self.conf["spark.jars"]) != 0 else ""} """
+        spark_jars = f"""{"--jars " + ",".join([f"file://{self.workdir}/{os.path.basename(f)}" for f in self.conf["spark.jars"]]) + " " if len(self.conf["spark.jars"]) != 0 else ""} """
 
-        spark_packages = f"""{"--packages '" + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.packages"]]) + "'" if len(self.conf["spark.packages"]) != 0 else ""} """
+        spark_packages = f"""{"--packages " + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.packages"]]) + " " if len(self.conf["spark.packages"]) != 0 else ""} """
 
-        spark_repositories = f"""{"--repositories '" + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.repositories"]]) + "'" if len(self.conf["spark.repositories"]) != 0 else ""} """
+        spark_repositories = f"""{"--repositories " + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.repositories"]]) + " " if len(self.conf["spark.repositories"]) != 0 else ""} """
 
-        spark_py_files = f"""{"--py-files '" + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.py-files"]]) + "'" if len(self.conf["spark.py-files"]) != 0 else ""} """
+        spark_py_files = f"""{"--py-files " + ",".join([f"{os.path.basename(f)}" for f in self.conf["spark.py-files"]]) + " " if len(self.conf["spark.py-files"]) != 0 else ""} """
 
         spark_submit_command = " ".join([
             f"cd {self.workdir}; ",
-            f"spark-submit",
-            f"--name '{self.conf['application.name']}'",
-            f"--class {self.conf['application.class']} ",
-            f"{deploy_mode}",
+            f"/bin/spark-submit",
             f"{master}",
+            f"{deploy_mode}",
+            f"--class {self.conf['application.class']} ",
+            f"--name '{self.conf['application.name']}'",
             f"--driver-memory {self.conf['spark.driverMemory']}",
             f"--executor-memory {self.conf['spark.executorMemory']}",
+            f"{principal}",
+            f"{keytab}",
             f"{spark_repositories}",
             f"{spark_packages}",
             f"{spark_files}",
