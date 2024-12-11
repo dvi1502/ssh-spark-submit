@@ -200,6 +200,8 @@ spark {{
     "spark.executor.extraJavaOptions=\\\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\\\""
     "spark.driver.extraJavaOptions=\\\"-Dconfig.file=./application.conf -Dfile.encoding=utf-8\\\""
   ]
+  
+  # Use 'upload://' and 'server://' prefix to specify file location 
   files = [{files}]
   jars = [{jars}]
   packages = []
