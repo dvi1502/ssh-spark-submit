@@ -92,6 +92,7 @@ def run(conf: Config):
     print("ssh.host =\t", f"{colors.fg.lightgreen}", conf["ssh.host"], f"{colors.endc}")
     print("ssh.user =\t", f"{colors.fg.lightgreen}", conf["ssh.user"], f"{colors.endc}")
     print("ssh.key  =\t", f"{colors.fg.lightgreen}", conf["ssh.key"], f"{colors.endc}")
+    print(f"{colors.fg.green}---------------------------------------{colors.endc}")
 
     ssh = SSH(conf["ssh.host"], conf["ssh.user"], conf["ssh.key"])
 
