@@ -22,20 +22,21 @@ def get_app_verson(prjdir: str):
     with open(f"{prjdir}/build.sbt", mode="r", encoding="utf-8") as f:
         lines = f.readlines()
         for line in lines:
-            title_search = re.search(r'ThisBuild \/ version := "([0-9\.]+)(.*)"', line, re.IGNORECASE)
+            title_search = re.search(r'ThisBuild \/ version := "([0-9\.]+.*)"', line, re.IGNORECASE)
             if title_search:
                 title = title_search.group(1)
+                print(f"app version = {colors.fg.lightgreen}{title}{colors.endc}")
                 return title
 
-def move_files(files, prjdir, workdir, ssh):
 
+def move_files(files, prjdir, workdir, ssh):
     # скопировать файлы из локальной папки
     # upload: //
     # server: //
 
     for file in files:
         match = re.search(r"""^(.*):\/\/(.*)""", file)
-        driver = match.group(1)+"://"
+        driver = match.group(1) + "://"
         filename = os.path.basename(match.group(2))
         curdir = os.path.dirname(match.group(2))
 
@@ -79,7 +80,6 @@ def move_jars(files, prjdir, workdir, ssh):
             print(ssh.command(f"cp {curdir}/{filename} {workdir}/{filename}"))
 
 
-
 def run(conf: Config):
     # print("Аргументы : ", " ".join(str(e) for e in sys.argv[1:]))
 
@@ -87,7 +87,11 @@ def run(conf: Config):
     workdir = conf['ssh.workdir']
     app_version = get_app_verson(prjdir)
 
-    print(conf["ssh.host"], conf["ssh.user"], conf["ssh.key"])
+    print("workdir = ", {colors.fg.lightgreen}, workdir, {colors.endc})
+    print("ssh.host = ", {colors.fg.lightgreen}, conf["ssh.host"], {colors.endc})
+    print("ssh.user = ", {colors.fg.lightgreen}, conf["ssh.user"], {colors.endc})
+    print("ssh.key = ", {colors.fg.lightgreen},  conf["ssh.key"], {colors.endc})
+
     ssh = SSH(conf["ssh.host"], conf["ssh.user"], conf["ssh.key"])
 
     # создать рабочую папку
@@ -100,7 +104,7 @@ def run(conf: Config):
     move_jars(conf["spark.jars"], prjdir, workdir, ssh)
 
     # скопировать сборку
-    files = glob.glob(f'{prjdir}/target/**/*{app_version}.jar', recursive=True)
+    files = glob.glob(f'{prjdir}/target/**/*{app_version}*.jar', recursive=True)
     app_file = files[0]
     print(ssh.command(f"rm -f {workdir}/{os.path.basename(app_file)}"))
     ssh.transfer(f"{app_file}", f"{workdir}/{os.path.basename(app_file)}")
@@ -148,13 +152,21 @@ def new(spark_project_path: str):
     if not os.path.exists(run_path):
         os.mkdir(run_path, mode=0o777, dir_fd=None)
         files = ["app.conf"]
-        files = ',\n'.join(["\"\"\""+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
+        files = ',\n'.join(
+            ["\"\"\"" + os.path.join(run_path, file).replace(current_path, './') + "\"\"\"" for file in files if
+             not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
 
     else:
         files = os.listdir(run_path)
-        jars = ',\n'.join(["\"\"\"upload://"+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.jar'))])
-        py_files = ',\n'.join(["\"\"\"upload://"+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if file.endswith(('.py'))])
-        files = ',\n'.join(["\"\"\"upload://"+os.path.join(run_path, file).replace(current_path, './')+"\"\"\"" for file in files if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
+        jars = ',\n'.join(
+            ["\"\"\"upload://" + os.path.join(run_path, file).replace(current_path, './') + "\"\"\"" for file in files
+             if file.endswith(('.jar'))])
+        py_files = ',\n'.join(
+            ["\"\"\"upload://" + os.path.join(run_path, file).replace(current_path, './') + "\"\"\"" for file in files
+             if file.endswith(('.py'))])
+        files = ',\n'.join(
+            ["\"\"\"upload://" + os.path.join(run_path, file).replace(current_path, './') + "\"\"\"" for file in files
+             if not file.endswith(('.jar', '.py', 'spark-submit.conf'))])
 
     text = f"""projectdir = \"\"\"{current_path}\"\"\"
 
