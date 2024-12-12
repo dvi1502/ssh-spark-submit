@@ -87,10 +87,11 @@ def run(conf: Config):
     workdir = conf['ssh.workdir']
     app_version = get_app_verson(prjdir)
 
-    print("workdir = ", {colors.fg.lightgreen}, workdir, {colors.endc})
-    print("ssh.host = ", {colors.fg.lightgreen}, conf["ssh.host"], {colors.endc})
-    print("ssh.user = ", {colors.fg.lightgreen}, conf["ssh.user"], {colors.endc})
-    print("ssh.key = ", {colors.fg.lightgreen},  conf["ssh.key"], {colors.endc})
+    print("prjdir   =\t", f"{colors.fg.lightgreen}", prjdir, f"{colors.endc}")
+    print("workdir  =\t", f"{colors.fg.lightgreen}", workdir, f"{colors.endc}")
+    print("ssh.host =\t", f"{colors.fg.lightgreen}", conf["ssh.host"], f"{colors.endc}")
+    print("ssh.user =\t", f"{colors.fg.lightgreen}", conf["ssh.user"], f"{colors.endc}")
+    print("ssh.key  =\t", f"{colors.fg.lightgreen}", conf["ssh.key"], f"{colors.endc}")
 
     ssh = SSH(conf["ssh.host"], conf["ssh.user"], conf["ssh.key"])
 
