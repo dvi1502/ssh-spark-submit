@@ -14,6 +14,7 @@ parser.add_argument('-p', '--project', help='Spark-project path', type=str, requ
 parser.add_argument("-r", "--run", help="run", action="store_true")
 parser.add_argument("-n", "--new", help="new", action="store_true")
 parser.add_argument("-s", "--show", help="show", action="store_true")
+parser.add_argument("-d", "--deploy", help="show", action="store_true")
 
 if __name__ == "__main__":
     args = parser.parse_args()
