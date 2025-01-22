@@ -117,7 +117,7 @@ def run(conf: Config):
     move_jars(conf["spark.jars"], prjdir, workdir, ssh)
 
     # скопировать сборку
-    move_app(app_version, prjdir, workdir, ssh)
+    app_file = move_app(app_version, prjdir, workdir, ssh)
 
     # установить переменные окружения
     envs = conf["ssh.env"]
