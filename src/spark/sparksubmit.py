@@ -37,22 +37,21 @@ class SparkSubmit:
 
         master = Master(self.conf)
 
+        principal = ""
         if self.conf.get("spark.principal", ""):
             principal = f"--principal {self.conf['spark.principal']}"
-        else:
-            principal = ""
 
+        keytab = ""
         if self.conf.get("spark.keytab", ""):
             keytab = f"--keytab {self.conf['spark.keytab']}"
-        else:
-            keytab = ""
 
+        spark_configs = ""
+        if self.conf.get("spark.configs", ""):
+            spark_configs = " ".join([f"--conf {c}" for c in self.conf["spark.configs"]])
 
-        spark_configs = " ".join([f"--conf {c}" for c in self.conf["spark.configs"]]) if len(
-            self.conf["spark.configs"]) != 0 else ""
-
-        spark_app_args = " ".join([f"{arg}" for arg in self.conf["application.args"]]) if len(
-            self.conf["application.args"]) != 0 else ""
+        spark_app_args = ""
+        if self.conf.get("application.args", ""):
+            spark_app_args = " ".join([f"{arg}" for arg in self.conf["application.args"]])
 
         spark_files = self.files()
 
