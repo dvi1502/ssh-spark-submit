@@ -1,6 +1,6 @@
 
 from sys import stderr
-from colors import colors
+from ssh_spark_submit.comutils.colors import colors
 import paramiko
 
 

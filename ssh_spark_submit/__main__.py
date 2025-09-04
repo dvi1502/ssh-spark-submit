@@ -2,17 +2,12 @@ import glob
 import os
 import re
 import sys
-
 from config import Config
-
-# sys.path.append('src/spark')
-# sys.path.append('src/utils')
-
-from utils.argsparser import parser
 from pyhocon import ConfigFactory
-from spark.sparksubmit import SparkSubmit
-from utils.colors import colors
-from utils.ssh import SSH
+from ssh_spark_submit.spark.sparksubmit import SparkSubmit
+from ssh_spark_submit.comutils.colors import colors
+from ssh_spark_submit.comutils.ssh import SSH
+from ssh_spark_submit.comutils.argsparser import parser
 
 home_dir = os.path.expanduser("~")
 
@@ -129,7 +124,7 @@ def run(conf: Config):
     for script in scripts:
         print(ssh.command(f"{script}"))
 
-    # utils
+    # comutils
     # --------------------------------------------------------------------------------------------------------------
     app_id = ssh.command2(f"{SparkSubmit(conf, app_file)}")
     # --------------------------------------------------------------------------------------------------------------

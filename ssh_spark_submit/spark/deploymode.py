@@ -18,5 +18,5 @@ class DeployMode:
 
 if __name__ == '__main__':
     conf = ConfigFactory.parse_file(
-        """/tests/configs/utils.conf""")
+        """/tests/configs/comutils.conf""")
     print(DeployMode(conf))

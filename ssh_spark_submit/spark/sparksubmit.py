@@ -1,8 +1,8 @@
 import os
 
 from pyhocon import ConfigFactory
-from deploymode import DeployMode
-from master import Master
+from ssh_spark_submit.spark.deploymode import DeployMode
+from ssh_spark_submit.spark.master import Master
 
 
 class SparkSubmit:
@@ -88,6 +88,6 @@ class SparkSubmit:
 
 if __name__ == '__main__':
     conf = ConfigFactory.parse_file(
-        """/tests/configs/utils.conf""")
+        """/tests/configs/comutils.conf""")
 
     print(SparkSubmit(conf, "app_file"))
