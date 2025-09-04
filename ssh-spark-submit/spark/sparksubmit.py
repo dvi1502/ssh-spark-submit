@@ -1,5 +1,4 @@
 import os
-import re
 
 from pyhocon import ConfigFactory
 from spark.deploymode import DeployMode

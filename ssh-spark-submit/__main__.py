@@ -188,7 +188,7 @@ def new(spark_project_path: str):
     ssh_key = os.path.join(home_dir_local, ".ssh", "id_dmp")
     app_name = os.path.basename(os.path.normpath(current_path))
 
-    run_path = os.path.join(current_path, ".run")
+    run_path = os.path.join(current_path, "../.run")
     if not os.path.exists(run_path):
         os.mkdir(run_path, mode=0o777, dir_fd=None)
         files = ["app.conf"]
@@ -269,7 +269,7 @@ deploy {{
 }}
 """
 
-    with open(os.path.join(current_path, ".run", "spark-submit.conf"), 'w') as the_file:
+    with open(os.path.join(current_path, "../.run", "spark-submit.conf"), 'w') as the_file:
         for l in text:
             the_file.writelines(l)
 
