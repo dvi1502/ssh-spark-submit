@@ -1,6 +1,6 @@
 
 from sys import stderr
-from utils.colors import colors
+from colors import colors
 import paramiko
 
 

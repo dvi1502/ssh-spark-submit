@@ -1,8 +1,8 @@
 import os
 
 from pyhocon import ConfigFactory
-from spark.deploymode import DeployMode
-from spark.master import Master
+from deploymode import DeployMode
+from master import Master
 
 
 class SparkSubmit:
